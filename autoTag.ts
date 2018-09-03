@@ -25,17 +25,15 @@ export class AutoTag {
   public executeProcess(): void {
 
 
-     if (1 + 1 === 2) {
-       const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
-       const commitResult: string = execSync(`git commit -m="files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
-       console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
-
-
-    /*console.log(process.env.npm_config_argv,
-      process.env.npm_config_message, process.env.npm_config_upgrade,
-      process.env.npm_package_config_upgrade);*/
+    /*   if (1 + 1 === 2) {
+        const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
+        const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
+        //console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
+    console.log(process.env.npm_config_argv,
+       process.env.npm_config_message, process.env.npm_config_upgrade,
+       process.env.npm_package_config_upgrade);
     return;
-  }
+  }*/
 
     const upgrade: string = this.getArgumentUpgrade();
     const message: string = this.getArgument();
@@ -51,11 +49,14 @@ export class AutoTag {
       const nextBuild: Version = this.getUpgradeKind(upgrade);
       const currentBranch: string = execSync('git symbolic-ref --short HEAD', {encoding: 'utf8'});
       const taggedResult: string = execSync(`git tag -a ${this.getNewVersionStr(nextBuild)} -m "${message}"`, {encoding: 'utf8'});
+      const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
+      const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
       const pushedResult: string = execSync(`git push --tags`, {encoding: 'utf8'});
       this.writeNewVersionIntoPackageJson(nextBuild);
       const newTaggedResult: SpawnSyncReturns<string> = spawnSync('git', ['tag', '-l'], {encoding: 'utf8'});
+      const logPretty: string = execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, {encoding : 'utf8'});
 
-      this.logResult([taggedResult, pushedResult, newTaggedResult.stdout]);
+      this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout]);
       unlinkSync('autoTag.js');
 
 

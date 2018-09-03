@@ -24,15 +24,15 @@ class AutoTag {
         return Object.assign({}, this._currentVersion, { major: this._currentVersion.major + 1, minor: 0, maintenance: 0, build: 0 });
     }
     executeProcess() {
-        if (1 + 1 === 2) {
-            const addFileResult = child_process_1.execSync(`git add .`, { encoding: 'utf8' });
-            const commitResult = child_process_1.execSync(`git commit -m="files is been automatic commit in order to be tagged "`, { encoding: "utf8" });
-            console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
-            /*console.log(process.env.npm_config_argv,
-              process.env.npm_config_message, process.env.npm_config_upgrade,
-              process.env.npm_package_config_upgrade);*/
-            return;
-        }
+        /*   if (1 + 1 === 2) {
+            const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
+            const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
+            //console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
+        console.log(process.env.npm_config_argv,
+           process.env.npm_config_message, process.env.npm_config_upgrade,
+           process.env.npm_package_config_upgrade);
+        return;
+      }*/
         const upgrade = this.getArgumentUpgrade();
         const message = this.getArgument();
         this.handleArgError(upgrade);
@@ -45,10 +45,13 @@ class AutoTag {
             const nextBuild = this.getUpgradeKind(upgrade);
             const currentBranch = child_process_1.execSync('git symbolic-ref --short HEAD', { encoding: 'utf8' });
             const taggedResult = child_process_1.execSync(`git tag -a ${this.getNewVersionStr(nextBuild)} -m "${message}"`, { encoding: 'utf8' });
+            const addFileResult = child_process_1.execSync(`git add .`, { encoding: 'utf8' });
+            const commitResult = child_process_1.execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding: "utf8" });
             const pushedResult = child_process_1.execSync(`git push --tags`, { encoding: 'utf8' });
             this.writeNewVersionIntoPackageJson(nextBuild);
             const newTaggedResult = child_process_1.spawnSync('git', ['tag', '-l'], { encoding: 'utf8' });
-            this.logResult([taggedResult, pushedResult, newTaggedResult.stdout]);
+            const logPretty = child_process_1.execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, { encoding: 'utf8' });
+            this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout]);
             fs_1.unlinkSync('autoTag.js');
         }
         /**/
