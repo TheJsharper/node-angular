@@ -44,7 +44,16 @@ export class AutoTag {
       const pushedResult: string = execSync(`git push --tags`, {encoding: 'utf8'});
       const newTaggedResult: SpawnSyncReturns<string> = spawnSync('git', ['tag', '-l'], {encoding: 'utf8'});
       const logPretty: string = execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, {encoding: 'utf8'});
-      this.logResult([addFileResult, commitResult, pushedRemoteResult, taggedResult, pushedResult, newTaggedResult.stdout, logPretty]);
+
+      const tagListBashResultUpdated: string = execSync('git tag -l', {encoding: 'utf8'});
+      const tagNamesUpdated: string[] = tagListBashResultUpdated.split('\n').filter(tag => tag.match(/(^[0-9]*).([0-9]*).([0-9]*)-([0-9]*)/g));
+      const orderedVersionsUpdated: Version[] = this.getOrderedVersions(tagNamesUpdated, upgrade);
+
+      const packageJsonUpdated: any = JSON.parse(readFileSync('package.json', {encoding: 'utf8'}));
+      const currentUpdateVersionGit: string = this.getNewVersionStr(orderedVersionsUpdated[orderedVersionsUpdated.length - 1]);
+      const resultUpdateOutput: string = `\n\n\nTag is successfully upgraded git version:${currentUpdateVersionGit} <===> package.json version:${packageJsonUpdated.version}`;
+
+      this.logResult([addFileResult, commitResult, pushedRemoteResult, taggedResult, pushedResult, newTaggedResult.stdout, logPretty, resultUpdateOutput]);
       unlinkSync('autoTag.js');
 
 
