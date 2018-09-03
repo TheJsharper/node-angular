@@ -1,6 +1,6 @@
 {
   "name": "node-angular",
-  "version": "3.5.4-2",
+  "version": "3.5.4-3",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

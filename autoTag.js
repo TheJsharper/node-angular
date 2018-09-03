@@ -51,7 +51,7 @@ class AutoTag {
             this.writeNewVersionIntoPackageJson(nextBuild);
             const newTaggedResult = child_process_1.spawnSync('git', ['tag', '-l'], { encoding: 'utf8' });
             const logPretty = child_process_1.execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, { encoding: 'utf8' });
-            this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout]);
+            this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout, logPretty]);
             fs_1.unlinkSync('autoTag.js');
         }
         /**/

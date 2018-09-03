@@ -56,7 +56,7 @@ export class AutoTag {
       const newTaggedResult: SpawnSyncReturns<string> = spawnSync('git', ['tag', '-l'], {encoding: 'utf8'});
       const logPretty: string = execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, {encoding : 'utf8'});
 
-      this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout]);
+      this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout, logPretty]);
       unlinkSync('autoTag.js');
 
 
