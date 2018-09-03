@@ -25,15 +25,17 @@ export class AutoTag {
   public executeProcess(): void {
 
 
-    // if (1 + 1 === 2) {
+     if (1 + 1 === 2) {
+       const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
+       const commitResult: string = execSync(`git commit -m="files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
+       console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
 
-    console.log(process.env.npm_config_argv,
+
+    /*console.log(process.env.npm_config_argv,
       process.env.npm_config_message, process.env.npm_config_upgrade,
-      process.env.npm_package_config_upgrade);
-    //const upgrade2: string = this.getArgumentUpgrade();
-    //return;
-    //}
-
+      process.env.npm_package_config_upgrade);*/
+    return;
+  }
 
     const upgrade: string = this.getArgumentUpgrade();
     const message: string = this.getArgument();
