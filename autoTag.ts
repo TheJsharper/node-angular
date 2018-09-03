@@ -23,18 +23,6 @@ export class AutoTag {
   }
 
   public executeProcess(): void {
-
-
-    /*   if (1 + 1 === 2) {
-        const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
-        const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
-        //console.log("Add Result--->", addFileResult, "\nCommit Result--->", commitResult);
-    console.log(process.env.npm_config_argv,
-       process.env.npm_config_message, process.env.npm_config_upgrade,
-       process.env.npm_package_config_upgrade);
-    return;
-  }*/
-
     const upgrade: string = this.getArgumentUpgrade();
     const message: string = this.getArgument();
     this.handleArgError(upgrade);
@@ -47,21 +35,20 @@ export class AutoTag {
       const version: Version = orderedVersions[orderedVersions.length - 1];
       this._currentVersion = version;
       const nextBuild: Version = this.getUpgradeKind(upgrade);
+      this.writeNewVersionIntoPackageJson(nextBuild);
+      const addFileResult: string = execSync(`git add package.json`, {encoding: 'utf8'});
+      const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, {encoding: 'utf8'});
+      const pushedRemoteResult: string = execSync('git push', {encoding: 'utf8'});
       const currentBranch: string = execSync('git symbolic-ref --short HEAD', {encoding: 'utf8'});
       const taggedResult: string = execSync(`git tag -a ${this.getNewVersionStr(nextBuild)} -m "${message}"`, {encoding: 'utf8'});
-      const addFileResult: string = execSync(`git add .`, { encoding : 'utf8'});
-      const commitResult: string = execSync(`git commit -m "files is been automatic commit in order to be tagged "`, { encoding : "utf8"});
       const pushedResult: string = execSync(`git push --tags`, {encoding: 'utf8'});
-      this.writeNewVersionIntoPackageJson(nextBuild);
       const newTaggedResult: SpawnSyncReturns<string> = spawnSync('git', ['tag', '-l'], {encoding: 'utf8'});
-      const logPretty: string = execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, {encoding : 'utf8'});
-
-      this.logResult([taggedResult, addFileResult, commitResult, pushedResult, newTaggedResult.stdout, logPretty]);
+      const logPretty: string = execSync(`git log --tags --pretty="Hash:%H %d message:%s"`, {encoding: 'utf8'});
+      this.logResult([addFileResult, commitResult, pushedRemoteResult, taggedResult, pushedResult, newTaggedResult.stdout, logPretty]);
       unlinkSync('autoTag.js');
 
 
     }
-    /**/
 
   }
 
@@ -109,7 +96,6 @@ export class AutoTag {
 
   private handleArgError(upgrade: string): void {
     if (!(upgrade === 'build') && !(upgrade === 'maintenance') && !(upgrade === 'minor') && !(upgrade === 'major')) {
-      console.log("FEHLER-->", upgrade);
       throw  new SyntaxError(`upgrade argument syntax error
                                 example without arguments: npm run autoTag <-- automatic set the next tag build from 0.0.0-0 to 0.0.0-1,
                                 example with arguments: npm run autoTag --upgrade="maintenance" <-- automatic  set the next tag maintenance from 0.0.0-14 to  0.0.1-0
@@ -125,8 +111,7 @@ export class AutoTag {
 
   private getArgumentUpgrade(): string {
     const isArgument: boolean = process.env.npm_config_upgrade !== undefined;
-    console.log('Argument', process.env.npm_package_config_upgrade, process.env.npm_config_upgrade, process.env.npm_config_upgrade !== undefined);
-    return isArgument  ? process.env.npm_config_upgrade : "build";
+    return isArgument ? process.env.npm_config_upgrade : 'build';
   }
 
   private getOrderedVersions(tagNames: string[], upgrade: string): Version[] {
